@@ -11,3 +11,4 @@
 - <i>smartsocket.local/s2off</i> – This endpoint is to turn OFF the Socket Two  
 
 <h6>The below page is just to show the manual level triggering with a simulated animation based presentation created with the help of HTML, CSS & JS.</h6>
+👉https://musaibnazir13.github.io/SmartSocket/
