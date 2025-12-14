@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Universal Smart Socket – AP → STA IoT Simulation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+  margin:0;
+  background:#0f172a;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-family:Segoe UI,system-ui;
+}
+.app{
+  width:1400px;
+  height:800px;
+  background:#f8fafc;
+  border-radius:22px;
+  box-shadow:0 40px 90px rgba(0,0,0,.6);
+  position:relative;
+  overflow:hidden;
+}
+
+/* COMPONENTS */
+.comp{
+  position:absolute;
+  text-align:center;
+  font-size:13px;
+  font-weight:600;
+}
+.comp img{
+  width:100%;
+  border-radius:12px;
+  box-shadow:0 8px 25px rgba(0,0,0,.35);
+}
+.comp span{display:block;margin-top:6px;color:#0f172a}
+#router span{margin-bottom: 6px;}
+#pushbtn{
+  top:650px;
+  left:680px;
+  width:70px;
+  transform: scale(1.2);           /* small & realistic */
+}
+
+/* POSITIONS */
+#phone{top:120px;left:60px;width:260px}
+#router{top:40px;left:420px;width:220px}
+#esp{top:300px;left:420px;width:320px}
+#hlk{top:50px;left:780px;width:200px}
+#relay{top:360px;left:780px;width:260px}
+#socket1{top:300px;left:1120px;width:160px}
+
+/* ESP LIBRARIES */
+.esp-libs{
+  position:absolute;
+  bottom:25px;
+  left:12px;
+  font-size:10px;
+  color:#9ca3af;
+  border: dashed 1px blueviolet;
+}
+.esp-libs span{
+  display:block;
+  padding:2px 4px;
+  border-radius:4px;
+}
+.esp-libs span.active{
+  background:#2563eb;
+  color:#fff;
+}
+
+/* AP BROADCAST */
+.ap-broadcast{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  display:none;
+}
+.ap-broadcast span{
+  position:absolute;
+  top:50%;
+  left:50%;
+  border:4px solid #3a4aff;
+  border-radius:50%;
+  animation:wave 2.6s infinite;
+}
+.ap-broadcast span:nth-child(1){width:60px;height:60px}
+.ap-broadcast span:nth-child(2){width:100px;height:100px;animation-delay:.7s}
+.ap-broadcast span:nth-child(3){width:140px;height:140px;animation-delay:1.4s}
+
+@keyframes wave{
+  from{opacity:.9;transform:translate(-50%,-50%) scale(.4)}
+  to{opacity:0;transform:translate(-50%,-50%) scale(1)}
+}
+/* Relay switch animation */
+#relaySwitch{
+  pointer-events:none;
+}
+
+.relay-on #relayArm{
+  transform-origin:60px 30px;
+  transform:rotate(20deg);
+  transition:transform 0.6s ease;
+}
+
+.relay-off #relayArm{
+  transform-origin:60px 30px;
+  transform:rotate(-30deg);
+  transition:transform 0.6s ease;
+}
+
+/* SOCKET GLOW */
+.socket-glow{
+  animation:glow 1.4s infinite alternate;
+}
+@keyframes glow{
+  from{box-shadow:0 0 20px #ffe066,0 0 40px #ffcc00}
+  to{box-shadow:0 0 60px #fff176,0 0 100px #ff9800}
+}
+
+/* WIRES */
+svg{position:absolute;inset:0}
+.wire{stroke-width:4;fill:none}
+.wifi{stroke:#9ca3af;stroke-dasharray:6 6}
+.hidden{opacity:0}
+.power{stroke:#ff0000}
+.control{stroke:#0f12df}
+.neutral{stroke:#d87e11}
+
+/* MESSAGE */
+.message{
+  position:absolute;
+  padding:6px 12px;
+  background:#1e293b;
+  color:#e5e7eb;
+  border-radius:10px;
+  font-size:12px;
+  opacity:0;
+  box-shadow:0 6px 18px rgba(0,0,0,.4);
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<!-- PHONE -->
+<div class="comp" id="phone">
+  <img id="phoneScreen" src="scr1.jpeg">
+  <span>Smartphone</span>
+</div>
+
+<!-- ROUTER -->
+<div class="comp" id="router">
+  <span>Router</span>
+  <img src="https://static.vecteezy.com/system/resources/previews/019/859/167/original/wifi-router-internet-png.png">
+</div>
+
+<!-- ESP -->
+<div class="comp" id="esp">
+  <img src="https://www.okystar.com/wp-content/uploads/2019/07/OKY22514.jpg">
+
+  <div class="ap-broadcast" id="apBroadcast">
+    <span></span><span></span><span></span>
+  </div>
+
+  <div class="esp-libs">
+    <span id="lib-wm">&lt;WiFiManager.h&gt;</span>
+    <span id="lib-web">&lt;ESP8266WebServer.h&gt;</span>
+    <span id="lib-mdns">&lt;ESP8266mDNS.h&gt;</span>
+  </div>
+
+  <span>ESP8266</span>
+</div>
+
+<!-- 🔘 PUSH BUTTON -->
+<div class="comp" id="pushbtn">
+  <img src="https://electrosome.com/wp-content/uploads/2012/12/Push-Button-Switch.jpg">
+  <span>Reset Button</span>
+</div>
+
+<!-- POWER -->
+<div class="comp" id="hlk">
+  <img src="https://robu.in/wp-content/uploads/2019/01/HLK-5M05-Power-Module-2.jpg">
+  <span>HLK-5M05</span>
+</div>
+
+<!-- RELAY -->
+<div class="comp" id="relay">
+  <img src="https://d2t1xqejof9utc.cloudfront.net/screenshots/pics/66f6e6035e8244d9ccda0075c95cedd9/large.png">
+  <!-- Relay switch symbol -->
+<svg id="relaySwitch" width="120" height="60" viewBox="0 0 120 60"
+     style="position:absolute;top:15%;left:82%;transform:translate(-50%,-50%);">
+  
+  <!-- left terminal -->
+  <circle cx="20" cy="30" r="4" fill="#111"/>
+
+  <!-- right terminal -->
+  <circle cx="100" cy="30" r="4" fill="#111"/>
+
+  <!-- fixed contact -->
+  <line x1="20" y1="30" x2="60" y2="30"
+        stroke="#111" stroke-width="3"/>
+
+  <!-- moving arm -->
+  <line id="relayArm"
+        x1="60" y1="30"
+        x2="95" y2="15"
+        stroke="#111" stroke-width="3"
+        stroke-linecap="round"/>
+</svg>
+
+  <span>Relay</span>
+</div>
+
+<!-- SOCKET -->
+<div class="comp" id="socket1">
+  <img id="sock1" src="https://5.imimg.com/data5/SELLER/Default/2022/12/NM/WE/SN/8029219/indian-sockets-500x500.jpg">
+  <span>Socket</span>
+</div>
+
+<!-- WIRES -->
+<svg viewBox="0 0 1400 800">
+  <!-- <line id="apLink" x1="320" y1="300" x2="459" y2="510" class="wire wifi"/>
+  <line id="apLink" x1="580" y1="470" x2="459" y2="510" class="wire wifi"/> -->
+
+  <line class="wire wifi apLink" x1="320" y1="300" x2="459" y2="510"/>
+  <line class="wire wifi apLink" x1="580" y1="470" x2="459" y2="510"/>
+
+
+  <line id="phoneRouter" x1="320" y1="260" x2="450" y2="230" class="wire wifi hidden"/>
+  <line id="routerEsp" x1="520" y1="230" x2="520" y2="340" class="wire wifi hidden"/>
+
+  <line x1="948" y1="115" x2="555" y2="360" class="wire power"/>
+
+  <line x1="800" y1="350" x2="886" y2="530" class="wire power"/>
+  <line x1="800" y1="350" x2="1000" y2="300" class="wire power"/>
+  <line x1="948" y1="115" x2="1000" y2="300" class="wire power"/>
+  
+  <line x1="690" y1="690" x2="600" y2="555" class="wire control"/>
+  <line x1="596" y1="545" x2="880" y2="525" class="wire control"/>
+  <line x1="990" y1="440" x2="1120" y2="380" class="wire neutral"/>
+</svg>
+
+<div class="message" id="msg"></div>
+</div>
+
+<script>
+const msg = document.getElementById("msg");
+const phoneImg = document.getElementById("phoneScreen");
+const socket = document.getElementById("sock1");
+const apBroadcast = document.getElementById("apBroadcast");
+
+const apLinks = document.querySelectorAll(".apLink");
+const phoneRouter = document.getElementById("phoneRouter");
+const routerEsp = document.getElementById("routerEsp");
+const relay = document.getElementById("relay");
+
+const libs = {
+  wm: document.getElementById("lib-wm"),
+  web: document.getElementById("lib-web"),
+  mdns: document.getElementById("lib-mdns")
+};
+
+function clearLibs(){
+  Object.values(libs).forEach(l => l.classList.remove("active"));
+}
+
+function center(el){
+  const r = el.getBoundingClientRect();
+  const a = document.querySelector(".app").getBoundingClientRect();
+  return [r.left-a.left+r.width/2, r.top-a.top+r.height/2];
+}
+
+function send(from,to,text){
+  const [sx,sy] = center(document.querySelector(from));
+  const [tx,ty] = center(document.querySelector(to));
+  msg.textContent = text;
+  msg.style.left = sx+"px";
+  msg.style.top  = sy+"px";
+  msg.style.opacity = 1;
+  return msg.animate(
+    [{left:sx+"px",top:sy+"px"},{left:tx+"px",top:ty+"px"}],
+    {duration:1400,easing:"ease-in-out",fill:"forwards"}
+  ).finished;
+}
+
+function resetScene(){
+  apBroadcast.style.display="none";
+  apLinks.forEach(l => l.classList.remove("hidden"));
+  phoneRouter.classList.add("hidden");
+  routerEsp.classList.add("hidden");
+  socket.classList.remove("socket-glow");
+  relay.classList.remove("relay-on");
+ relay.classList.add("relay-off");
+
+  clearLibs();
+  msg.style.opacity=0;
+}
+
+async function renderStep(i){
+  resetScene();
+  const s = steps[i];
+
+  phoneImg.src = s.img;
+  if(s.lib) libs[s.lib].classList.add("active");
+
+ if(s.ap && !s.silent){
+  // AP MODE VISUALS
+  apBroadcast.style.display = "block";
+
+  // Send AP message
+  await send(s.from, s.to, s.text);
+
+  // 🔁 SWITCH TO STA TOPOLOGY
+  if(s.switchToSTA){
+    apBroadcast.style.display = "none";
+
+    // ❌ Cut ESP ↔ Phone
+    apLinks.forEach(l => l.classList.add("hidden"));
+
+    // ✅ Enable Router links
+    phoneRouter.classList.remove("hidden");
+    routerEsp.classList.remove("hidden");
+  }
+}
+
+
+  if(s.sta && !s.silent){
+    apLinks.forEach(l => l.classList.add("hidden"));
+    phoneRouter.classList.remove("hidden");
+    routerEsp.classList.remove("hidden");
+
+    await send("#phone","#router","HTTP Request");
+    await send("#router","#esp",s.text);
+
+    if(s.power){
+      await send("#esp","#relay","GPIO LOW → Relay ON");
+
+  // 🔌 SWITCH CLOSES
+  relay.classList.remove("relay-off");
+  relay.classList.add("relay-on");
+
+  await send("#relay","#socket1","AC Power Supplied");
+  socket.classList.add("socket-glow");
+  return;
+
+    }
+
+    await send("#esp","#router","HTTP Response");
+    await send("#router","#phone","200 OK");
+  }
+}
+
+const steps = [
+  // 1️⃣ ESP AP broadcast
+  {
+    img: "scr1.jpeg",
+    lib: "wm",
+    text: "MY_AP Broadcast",
+    ap: true,
+    from: "#esp",
+    to: "#phone"
+  },
+
+  // 2️⃣ Captive portal opened
+  {
+    img: "scr2.jpeg",
+    lib: "web",
+    text: "GET 192.168.4.1",
+    ap: true,
+    from: "#phone",
+    to: "#esp"
+  },
+
+  // 3️⃣ WiFiManager config form
+  {
+    img: "scr3.jpeg",
+    lib: "wm",
+    text: "WiFi Config Page Loaded",
+    ap: true,
+    from: "#esp",
+    to: "#phone"
+  },
+
+  // 4️⃣ Save clicked
+  {
+    img: "scr3.jpeg",
+    lib: "wm",
+    text: "POST /wifisave",
+    ap: true,
+    from: "#phone",
+    to: "#esp"
+  },
+
+  // 5️⃣ ESP connected to router
+ {
+  img: "scr5.jpeg",
+  lib: "mdns",
+  text: "ESP8266: STA Connected",
+  ap: true,
+  switchToSTA: true,
+  from: "#esp",
+  to: "#phone"
+}
+,
+
+  // 6️⃣ AUTH PAGE APPEARS (NO AUTH YET)
+  {
+    img: "scr6.jpeg",
+    lib: null,
+    text: "Auth Page Displayed",
+    sta: true,
+    silent: true
+  },
+
+  // 7️⃣ AUTHENTICATION HAPPENS
+  {
+    img: "scr6.jpeg",
+    lib: "web",
+    text: "server.authenticate()",
+    sta: true
+  },
+
+  // 8️⃣ MAIN UI LOADED
+  {
+    img: "scr7.jpeg",
+    lib: "web",
+    text: "handleRoot()",
+    sta: true
+  },
+
+  // 9️⃣ SOCKET SWITCH
+  {
+    img: "scr8.jpeg",
+    lib: "web",
+    text: "GET /s1on",
+    sta: true,
+    power: true
+  }
+];
+
+
+let idx = -1;
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowRight" && idx < steps.length-1){
+    idx++;
+    renderStep(idx);
+  }
+  if(e.key==="ArrowLeft" && idx > 0){
+    idx--;
+    renderStep(idx);
+  }
+});
+</script>
+</body>
+</html>
