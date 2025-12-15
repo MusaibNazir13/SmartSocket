@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Universal Smart Socket – Presentation</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:#020617;
+  font-family:Inter,system-ui;
+  overflow:hidden;
+}
+
+/* ===== SLIDES ===== */
+.deck{width:100vw;height:100vh;position:relative}
+
+.slide{
+  position:absolute;
+  inset:0;
+  padding:70px;
+  display:none;
+  background:#f8fafc;
+}
+.slide.active{display:flex}
+
+/* ===== LAYOUT ===== */
+.slide-inner{width:100%;display:flex;gap:60px}
+.content-left,.content-right{flex:1;display:flex;align-items:center}
+.content-right{justify-content:center}
+
+/* ===== TEXT CARD ===== */
+.text-card{
+  width:100%;
+  padding:42px;
+  border-radius:28px;
+  box-shadow:0 35px 80px rgba(0,0,0,.18);
+}
+.primary{background:linear-gradient(135deg,#f8fafc,#e0f2fe);width: 50%;}
+.warning{background:linear-gradient(135deg,#fff7ed,#fed7aa);width: 50%;}
+.arch{background:linear-gradient(135deg,#ecfeff,#cffafe);}
+/* ===== SLIDE 1 BACKGROUND IMAGE ===== */
+.slide-bg{
+  position:centered;
+  background:
+    linear-gradient(
+      rgba(2,6,23,.75),
+      rgba(2,6,23,.75)
+    ),
+    url("slide1.png") center/cover no-repeat;
+}
+.sec{
+  position:centered;
+  background:
+    linear-gradient(
+      rgba(2,6,23,.75),
+      rgba(2,6,23,.75)
+    ),
+    url("slide2.png")
+}
+.thr{
+  position:center;
+  background:
+    linear-gradient(
+      rgba(2,6,23,.75),
+      rgba(2,6,23,.75)
+    ),
+    url("slide3.png")
+}
+/* Ensure content stays above background */
+.slide-bg .slide-inner{
+  position:relative;
+  z-index:2;
+}
+
+/* Improve text contrast on background */
+.slide-bg .text-card{
+  background:linear-gradient(
+    135deg,
+    rgba(248,250,252,.92),
+    rgba(224,242,254,.92)
+  );
+}
+
+/* ===== TYPOGRAPHY ===== */
+h1{font-family:Poppins;font-size:44px;line-height:1.2;margin-bottom:22px}
+p,li{font-size:18px;line-height:1.7;color:#334155}
+ul{padding-left:22px}
+strong{color:#020617}
+
+/* ===== BULLET ANIMATION ===== */
+li, p.fade{
+  opacity:0;
+  transform:scale(.96) translateY(12px);
+}
+li.show, p.fade.show{
+  animation:bullet .6s ease forwards;
+}
+@keyframes bullet{
+  to{opacity:1;transform:none}
+}
+
+/* ===== VISUAL CONTAINERS ===== */
+.visual-img{
+  width:90%;
+  height:90%;
+  border-radius:30px;
+  background:#f1f5f9;
+  box-shadow:0 45px 100px rgba(59,130,246,.45);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:30px;
+}
+.visual-img img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+/* ===== ARCH IMAGES ===== */
+.arch-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:26px;
+}
+.arch-item{
+  background:#f8fafc;
+  border-radius:20px;
+  padding:20px;
+  text-align:center;
+  box-shadow:0 20px 40px rgba(0,0,0,.15);
+}
+.arch-item img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+}
+
+/* ===== BUTTON ===== */
+.sim-btn{
+  margin-top:30px;
+  padding:14px 34px;
+  border:none;
+  border-radius:999px;
+  background:#2563eb;
+  color:#fff;
+  font-weight:600;
+  cursor:pointer;
+  box-shadow:0 15px 40px rgba(37,99,235,.45);
+}
+
+/* ===== FOOTER ===== */
+.footer{
+  position:absolute;
+  bottom:20px;
+  width:100%;
+  text-align:center;
+  color:#64748b;
+}
+</style>
+</head>
+
+<body>
+
+<div class="deck">
+
+<!-- ================= SLIDE 1 ================= -->
+<section class="slide active slide-bg">
+  <div class="slide-inner">
+
+    <div class="content-left">
+      <div class="text-card primary">
+        <h1>
+          Universal Smart<br>
+          (Socket) Auto-Cut<br>
+          Power Control System<br>
+          Using IoT
+        </h1>
+
+        <p class="fade">
+          Auto Turn ON/OFF Socket, once the battery of the device is fully charged
+          the socket turns off automatically, and can be turned ON and OFF using
+          web dashboard as well. Prevents battery degradation
+        </p>
+
+        <p class="fade" style="margin-top:40px">
+          <strong>Presented by:</strong><br><br>
+          <strong>MUSAIB NAZIR</strong> &nbsp;&nbsp; &amp; &nbsp;&nbsp; SHEIKH SHAKIR
+        </p>
+        <footer style="margin-top: 20px; font-size: 12px;"><i>*Note: By Prevention I mean slows down aging by 4x. If the battery usually degrades in 1 year, by our smartsocket it will degrade in 4 years.</i></footer>
+      </div>
+    </div>
+
+    
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= SLIDE 2 ================= -->
+<section class="slide slide-bg sec">
+  <div class="slide-inner">
+
+    <div class="content-left">
+      <div class="text-card warning">
+        <h1>Prevention of Li-Ion<br>Battery Degradation</h1>
+           <strong>Challenges we are addressing:</strong>
+        <ul>
+          <!-- <li></li> -->
+          <li><strong>Overcharging</strong> – keeps Battery at high voltage constantly, stressing internal chemicals and reduces capacity of battery.</li><hr>
+          <li><strong>Heat Buildup</strong> – continuous charging generates heat, and heat accelerates battery aging by damaging cells.</li><hr>
+          <li><strong>Staying at 100% for long time</strong> – Holding battery charge for long time stresses battery chemistry, causing long term degradation</li>
+        </ul>
+      </div>
+    </div>
+
+    
+    </div>
+
+  </div>
+</section>
+
+<!-- ================= SLIDE 3 ================= -->
+<section class="slide slide-bg thr">
+  <div class="slide-inner">
+
+    <div class="content-left">
+      <div class="text-card arch">
+        <h1>Proposed Solution &<br>System Architecture</h1>
+
+        <p class="fade"><strong>Our IoT-Based Approach</strong></p>
+
+        <p class="fade">
+          We are trying to automate the power supply, by just controlling the
+          supply going to the device, by getting battery status inputs from the
+          device. Or by notification triggering,
+        </p>
+
+        <p class="fade"><strong>In E-Vs:</strong></p>
+        <p class="fade">
+          The EVs are connected to smartphones, the smartphones are already getting
+          the notifications from the vehicles once they are fully charged.
+        </p>
+
+        <p class="fade"><strong>In Smartphones:</strong></p>
+        <p class="fade">
+          Smartphones nowadays come up with inbuilt routine/modes feature with
+          different names. We can create a routine once the battery is charged
+          until certain limit or 100%, trigger the endpoint of ESP82.
+        </p>
+
+        <button class="sim-btn" onclick="location.href='proj_simulation.html'">
+          ▶ Open Project Simulation
+        </button>
+      </div>
+    </div>
+
+    <div class="content-right">
+      <!-- <div class="arch-grid">
+        <div class="arch-item"><img src="ev.png"></div>
+        <div class="arch-item"><img src="smart.jpeg"></div>
+        <div class="arch-item"><img src="esp82.png"></div>
+      </div> -->
+    </div>
+
+  </div>
+</section>
+
+
+</div>
+
+<script>
+const slides=document.querySelectorAll(".slide");
+let index=0;
+
+function show(i){
+  slides.forEach(s=>s.classList.remove("active"));
+  slides[i].classList.add("active");
+
+  const bullets=slides[i].querySelectorAll("li, .fade");
+  bullets.forEach((b,j)=>{
+    b.classList.remove("show");
+    setTimeout(()=>b.classList.add("show"),j*180);
+  });
+}
+
+document.addEventListener("keydown",e=>{
+  if(e.key==="ArrowRight" && index<slides.length-1){index++;show(index);}
+  if(e.key==="ArrowLeft" && index>0){index--;show(index);}
+});
+
+show(0);
+</script>
+
+</body>
+</html>
