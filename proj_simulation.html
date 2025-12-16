@@ -246,10 +246,35 @@ svg{position:absolute;inset:0}
   <line x1="990" y1="440" x2="1120" y2="380" class="wire neutral"/>
 </svg>
 
+<!-- DEMO VIDEO BUTTON (HIDDEN INITIALLY) -->
+<button id="demoBtn"
+  onclick="location.href='video.html'"
+  style="
+    position:absolute;
+    bottom:22px;
+    right:22px;
+    padding:14px 32px;
+    border-radius:999px;
+    border:none;
+    background:#2563eb;
+    color:#fff;
+    font-weight:600;
+    font-size:15px;
+    cursor:pointer;
+    box-shadow:0 15px 40px rgba(37,99,235,.5);
+    display:none;
+  ">
+  ▶ View Automation Demo Video
+</button>
+
+
 <div class="message" id="msg"></div>
 </div>
 
 <script>
+  const demoBtn = document.getElementById("demoBtn");
+  demoBtn.style.display = "none";
+
 const msg = document.getElementById("msg");
 const phoneImg = document.getElementById("phoneScreen");
 const socket = document.getElementById("sock1");
@@ -347,6 +372,8 @@ async function renderStep(i){
 
   await send("#relay","#socket1","AC Power Supplied");
   socket.classList.add("socket-glow");
+
+  demoBtn.style.display = "block";
   return;
 
     }
@@ -454,6 +481,11 @@ document.addEventListener("keydown",e=>{
   if(e.key==="ArrowLeft" && idx > 0){
     idx--;
     renderStep(idx);
+  }
+});
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape"){
+    window.location.href="slides.html";
   }
 });
 </script>
