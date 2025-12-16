@@ -177,7 +177,7 @@ svg{position:absolute;inset:0}
   <span>ESP8266</span>
 </div>
 
-<!-- 🔘 PUSH BUTTON -->
+<!--  PUSH BUTTON -->
 <div class="comp" id="pushbtn">
   <img src="https://electrosome.com/wp-content/uploads/2012/12/Push-Button-Switch.jpg">
   <span>Reset Button</span>
@@ -341,14 +341,14 @@ async function renderStep(i){
   // Send AP message
   await send(s.from, s.to, s.text);
 
-  // 🔁 SWITCH TO STA TOPOLOGY
+  //  SWITCH TO STA TOPOLOGY
   if(s.switchToSTA){
     apBroadcast.style.display = "none";
 
-    // ❌ Cut ESP ↔ Phone
+    //  Cut ESP ↔ Phone
     apLinks.forEach(l => l.classList.add("hidden"));
 
-    // ✅ Enable Router links
+    // Enable Router links
     phoneRouter.classList.remove("hidden");
     routerEsp.classList.remove("hidden");
   }
@@ -366,7 +366,7 @@ async function renderStep(i){
     if(s.power){
       await send("#esp","#relay","GPIO LOW → Relay ON");
 
-  // 🔌 SWITCH CLOSES
+  //  SWITCH CLOSES
   relay.classList.remove("relay-off");
   relay.classList.add("relay-on");
 
@@ -384,7 +384,7 @@ async function renderStep(i){
 }
 
 const steps = [
-  // 1️⃣ ESP AP broadcast
+  //  ESP AP broadcast
   {
     img: "scr1.jpeg",
     lib: "wm",
@@ -394,7 +394,7 @@ const steps = [
     to: "#phone"
   },
 
-  // 2️⃣ Captive portal opened
+  //  Captive portal opened
   {
     img: "scr2.jpeg",
     lib: "web",
@@ -404,7 +404,7 @@ const steps = [
     to: "#esp"
   },
 
-  // 3️⃣ WiFiManager config form
+  //  WiFiManager config form
   {
     img: "scr3.jpeg",
     lib: "wm",
@@ -414,7 +414,7 @@ const steps = [
     to: "#phone"
   },
 
-  // 4️⃣ Save clicked
+  //  Save clicked
   {
     img: "scr3.jpeg",
     lib: "wm",
@@ -424,7 +424,7 @@ const steps = [
     to: "#esp"
   },
 
-  // 5️⃣ ESP connected to router
+  //  ESP connected to router
  {
   img: "scr5.jpeg",
   lib: "mdns",
@@ -436,7 +436,7 @@ const steps = [
 }
 ,
 
-  // 6️⃣ AUTH PAGE APPEARS (NO AUTH YET)
+  //  AUTH PAGE APPEARS (NO AUTH YET)
   {
     img: "scr6.jpeg",
     lib: null,
@@ -445,7 +445,7 @@ const steps = [
     silent: true
   },
 
-  // 7️⃣ AUTHENTICATION HAPPENS
+  //  AUTHENTICATION HAPPENS
   {
     img: "scr6.jpeg",
     lib: "web",
@@ -453,7 +453,7 @@ const steps = [
     sta: true
   },
 
-  // 8️⃣ MAIN UI LOADED
+  //  MAIN UI LOADED
   {
     img: "scr7.jpeg",
     lib: "web",
@@ -461,7 +461,7 @@ const steps = [
     sta: true
   },
 
-  // 9️⃣ SOCKET SWITCH
+  // SOCKET SWITCH
   {
     img: "scr8.jpeg",
     lib: "web",
@@ -491,4 +491,5 @@ document.addEventListener("keydown",e=>{
 </script>
 </body>
 </html>
+
 
