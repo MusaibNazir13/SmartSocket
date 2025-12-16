@@ -14,7 +14,8 @@ body{
   margin:0;
   background:#020617;
   font-family:Inter,system-ui;
-  overflow:hidden;
+  overflow-x:hidden;
+  overflow-y: auto;
 }
 
 /* ===== SLIDES ===== */
@@ -30,7 +31,7 @@ body{
 .slide.active{display:flex}
 
 /* ===== LAYOUT ===== */
-.slide-inner{width:100%;display:flex;gap:60px}
+.slide-inner{width:100%;display:flex;gap:60px;flex-wrap: wrap;}
 .content-left,.content-right{flex:1;display:flex;align-items:center}
 .content-right{justify-content:center}
 
@@ -41,10 +42,15 @@ body{
   border-radius:28px;
   box-shadow:0 35px 80px rgba(0,0,0,.18);
 }
-.primary{background:linear-gradient(135deg,#f8fafc,#e0f2fe);width: 50%;}
-.warning{background:linear-gradient(135deg,#fff7ed,#fed7aa);width: 50%;}
+.primary{background:linear-gradient(135deg,#f8fafc,#e0f2fe);}
+.warning{background:linear-gradient(135deg,#fff7ed,#fed7aa);}
 .arch{background:linear-gradient(135deg,#ecfeff,#cffafe);}
 /* ===== SLIDE 1 BACKGROUND IMAGE ===== */
+.primary, .warning {
+  width: 100%;
+  max-width: 600px; /* optional */
+}
+
 .slide-bg{
   position:centered;
   background:
@@ -85,6 +91,7 @@ body{
     rgba(248,250,252,.92),
     rgba(224,242,254,.92)
   );
+  
 }
 
 /* ===== TYPOGRAPHY ===== */
@@ -162,7 +169,63 @@ li.show, p.fade.show{
   width:100%;
   text-align:center;
   color:#64748b;
+  margin-top: 20px;
+  font-size: 12px;
 }
+
+@media (orientation: portrait) {
+
+  body {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .slide {
+    padding: 5%;
+    min-height: 100vh;
+    height: auto;
+  }
+
+  .slide-inner {
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .text-card {
+    width: 100%;
+    height: auto;
+    opacity: 80%;
+  }
+
+  h1 {
+    font-family: Poppins;
+    font-size: 25px;
+    line-height: 1.2;
+    margin-bottom: 22px;
+  }
+
+  p, li {
+    font-size: 15px;
+    line-height: 1.7;
+    color: #334155;
+  }
+
+  ul {
+    padding-left: 10px;
+  }
+
+  strong {
+    color: #020617;
+  }
+
+  footer {
+    font-size: 10px;
+    bottom: 5px;
+  }
+  
+}
+
+
 </style>
 </head>
 
@@ -189,9 +252,8 @@ li.show, p.fade.show{
           web dashboard as well. Prevents battery degradation
         </p>
 
-        <p class="fade" style="margin-top:40px">
-          
-        <footer style="margin-top: 20px; font-size: 12px;"><i>*Note: By Prevention I mean slows down aging by 4x. If the battery usually degrades in 1 year, by our smartsocket it will degrade in 4 years.</i></footer>
+      
+        <footer><i>*Note: By Prevention I mean slows down aging by 4x. If the battery usually degrades in 1 year, by our smartsocket it will degrade in 4 years.</i></footer>
       </div>
     </div>
 
@@ -243,7 +305,7 @@ li.show, p.fade.show{
         <p class="fade"><strong>In E-Vs:</strong></p>
         <p class="fade">
           The EVs are connected to smartphones, the smartphones are already getting
-          the notifications from the vehicles once they are fully charged.
+          the notifications from the vehicles once they are fully charged. By that notification we trigger the ESP82 endpoint to turn off the socket connected to relay module.
         </p>
 
         <p class="fade"><strong>In Smartphones:</strong></p>
@@ -258,15 +320,6 @@ li.show, p.fade.show{
         </button>
       </div>
     </div>
-
-    <div class="content-right">
-      <!-- <div class="arch-grid">
-        <div class="arch-item"><img src="ev.png"></div>
-        <div class="arch-item"><img src="smart.jpeg"></div>
-        <div class="arch-item"><img src="esp82.png"></div>
-      </div> -->
-    </div>
-
   </div>
 </section>
 
@@ -274,28 +327,75 @@ li.show, p.fade.show{
 </div>
 
 <script>
-const slides=document.querySelectorAll(".slide");
-let index=0;
+const slides = document.querySelectorAll(".slide");
+let index = 0;
 
+/* ---------- SHOW SLIDE ---------- */
 function show(i){
-  slides.forEach(s=>s.classList.remove("active"));
+  slides.forEach(s => s.classList.remove("active"));
   slides[i].classList.add("active");
 
-  const bullets=slides[i].querySelectorAll("li, .fade");
+  const bullets = slides[i].querySelectorAll("li, .fade");
   bullets.forEach((b,j)=>{
     b.classList.remove("show");
-    setTimeout(()=>b.classList.add("show"),j*180);
+    setTimeout(()=>b.classList.add("show"), j * 180);
   });
 }
 
-document.addEventListener("keydown",e=>{
-  if(e.key==="ArrowRight" && index<slides.length-1){index++;show(index);}
-  if(e.key==="ArrowLeft" && index>0){index--;show(index);}
+/* ---------- KEYBOARD ---------- */
+document.addEventListener("keydown", e => {
+  if (e.key === "ArrowRight") goNext();
+  if (e.key === "ArrowLeft") goPrev();
 });
 
+/* ---------- TOUCH (MOBILE / TOUCHSCREEN) ---------- */
+let touchStartX = 0;
+
+document.addEventListener("touchstart", e => {
+  touchStartX = e.touches[0].clientX;
+},{passive:true});
+
+document.addEventListener("touchend", e => {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 60) {
+    diff > 0 ? goNext() : goPrev();
+  }
+},{passive:true});
+
+/* ---------- TRACKPAD (TWO-FINGER SWIPE) ---------- */
+let wheelLock = false;
+
+document.addEventListener("wheel", e => {
+  if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+    if (wheelLock) return;
+
+    if (e.deltaX > 40) goNext();
+    if (e.deltaX < -40) goPrev();
+
+    wheelLock = true;
+    setTimeout(() => wheelLock = false, 700);
+  }
+},{passive:false});
+
+/* ---------- NAVIGATION ---------- */
+function goNext(){
+  if (index < slides.length - 1) {
+    index++;
+    show(index);
+  }
+}
+
+function goPrev(){
+  if (index > 0) {
+    index--;
+    show(index);
+  }
+}
+
+/* ---------- INIT ---------- */
 show(0);
 </script>
 
+
 </body>
 </html>
-
