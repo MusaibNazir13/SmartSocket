@@ -125,7 +125,7 @@ body{
     display:block;
   }
 }
-.desktop-note{display:none;position: relative;top: 90%;text-align: left;margin-right:50%; font-size: 20px;font-weight: bolder;padding-left: 20px;}
+.desktop-note{display:none;position: relative;top: 90%;text-align: left;margin-right:50%; font-size: 20px;font-weight: bolder;padding-left: 20px;width=400px;}
 
 @media (orientation: landscape){
   .desktop-note{display:block}
@@ -270,16 +270,7 @@ svg{position:absolute;inset:0}
   <line x1="596" y1="545" x2="880" y2="525" class="wire control"/>
   <line x1="990" y1="440" x2="1120" y2="380" class="wire neutral"/>
 </svg>
-
-
-
-
-<div class="message" id="msg"></div>
-  
-
-<div class="desktop-note">
-   <p>Use ← → arrows to simulate</p>
-  <!-- DEMO VIDEO BUTTON (HIDDEN INITIALLY) -->
+<!-- demo vid btn hidden initially -->
 <button id="demoBtn"
   onclick="location.href='video.html'"
   style="
@@ -299,6 +290,13 @@ svg{position:absolute;inset:0}
   ">
   ▶ View Automation Demo Video
 </button>
+
+
+<div class="message" id="msg"></div>
+  
+
+<div class="desktop-note">
+   <p>Use ← → arrows to simulate</p>
 </div>
 </div>
 <div class="mobile-note">
