@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Universal Smart Socket – AP → STA IoT Simulation</title>
-<meta name="viewport" content="width=1920, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body{
@@ -269,11 +269,7 @@ svg{position:absolute;inset:0}
 
 
 <div class="message" id="msg"></div>
-  <footer><p></p>Use right/left arrow key simulate actions on Desktop & Right/Left Swipe on touchscreen devices</p></footer>
 </div>
-  
-    
- 
 
 <script>
   const demoBtn = document.getElementById("demoBtn");
@@ -492,8 +488,8 @@ document.addEventListener("keydown",e=>{
     window.location.href="/SmartSocket";
   }
 });
-
-  let touchStartX = 0;
+  // Mobile touch swipe navigation
+let touchStartX = 0;
 let touchStartY = 0;
 let touchEndX = 0;
 let touchEndY = 0;
@@ -534,9 +530,6 @@ function handleSwipe() {
 </script>
 </body>
 </html>
-
-
-
 
 
 
