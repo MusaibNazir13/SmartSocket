@@ -1,3 +1,4 @@
+If you are using the code then please give the credit.
 # SmartSocket
 <h5>This smart socket software is designed to be automated with different types of end‑point triggering.</h5>
 
