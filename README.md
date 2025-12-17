@@ -12,5 +12,3 @@
 
 <h6>The below page is just to show the manual level triggering with a simulated animation based presentation created with the help of HTML, CSS & JS. And includes the Automation Part Demo Video at the End of the simulation</h6>
 👉https://musaibnazir13.github.io/SmartSocket/
-
-<p>*Note : The above simulation website is best optimized for the DESKTOPs big size screes</p>
