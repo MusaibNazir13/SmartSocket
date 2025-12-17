@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Universal Smart Socket – AP → STA IoT Simulation</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=1920, initial-scale=0.2">
 
 <style>
 body{
@@ -270,6 +270,9 @@ svg{position:absolute;inset:0}
 
 <div class="message" id="msg"></div>
 </div>
+  <div>
+    <footer>Use right/left arrow key simulate actions on Desktop & Right/Left Swipe on touchscreen devices</footer>
+  </div>
 
 <script>
   const demoBtn = document.getElementById("demoBtn");
@@ -488,9 +491,49 @@ document.addEventListener("keydown",e=>{
     window.location.href="/SmartSocket";
   }
 });
+
+  let touchStartX = 0;
+let touchStartY = 0;
+let touchEndX = 0;
+let touchEndY = 0;
+
+document.addEventListener('touchstart', function(e) {
+  touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
+}, false);
+
+document.addEventListener('touchend', function(e) {
+  touchEndX = e.changedTouches[0].screenX;
+  touchEndY = e.changedTouches[0].screenY;
+  handleSwipe();
+}, false);
+
+function handleSwipe() {
+  const deltaX = touchEndX - touchStartX;
+  const deltaY = touchEndY - touchStartY;
+  const minSwipeDistance = 50; // Minimum distance for a swipe
+
+  // Check if it's a horizontal swipe (more horizontal than vertical)
+  if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > minSwipeDistance) {
+    if (deltaX > 0) {
+      // Swipe right - previous step
+      if (idx > 0) {
+        idx--;
+        renderStep(idx);
+      }
+    } else {
+      // Swipe left - next step
+      if (idx < steps.length - 1) {
+        idx++;
+        renderStep(idx);
+      }
+    }
+  }
+}
 </script>
 </body>
 </html>
+
 
 
 
