@@ -1,0 +1,181 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Smart Socket</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #191970, #7b2cbf);
+      color: white;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      margin: 0;
+    }
+    .card {
+      width: min(360px, 85vw);
+      padding: 24px;
+      border-radius: 18px;
+      background: #ffffff18;
+      border: 1px solid #ffffff40;
+    }
+    input, button {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      border: 0;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    button { cursor: pointer; background: #90e0ef; }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    .socket { padding: 12px 0; }
+    #status { overflow-wrap: anywhere; }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <h2>⚡ My Smart Socket</h2>
+    <p id="status">Sign in to continue.</p>
+
+    <section id="login">
+      <input id="email" type="email" placeholder="Email" autocomplete="username">
+      <input id="password" type="password" placeholder="Password" autocomplete="current-password">
+      <button id="loginBtn">Sign in</button>
+    </section>
+
+    <section id="controls" hidden>
+      <div class="socket">
+        <b>S1 — Ola Charger</b>
+        <button id="s1Btn" disabled>Loading…</button>
+      </div>
+      <div class="socket">
+        <b>S2</b>
+        <button id="s2Btn" disabled>Loading…</button>
+      </div>
+      <button id="logoutBtn">Sign out</button>
+    </section>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from
+      "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
+    import {
+      getAuth, signInWithEmailAndPassword, signOut,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
+    import {
+      getDatabase, ref, get, set
+    } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyD_KDCSkQ0A0yyJZfneikhHtqo35NNymDI",
+      authDomain: "mysmartsock.firebaseapp.com",
+      databaseURL: "https://mysmartsock-default-rtdb.firebaseio.com",
+      projectId: "mysmartsock",
+      storageBucket: "mysmartsock.firebasestorage.app",
+      messagingSenderId: "879716229174",
+      appId: "1:879716229174:web:be4bb060223365ce7cb897",
+      measurementId: "G-LRER21GLB4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    const status = document.getElementById("status");
+    const login = document.getElementById("login");
+    const controls = document.getElementById("controls");
+    const loginBtn = document.getElementById("loginBtn");
+    const s1Btn = document.getElementById("s1Btn");
+    const s2Btn = document.getElementById("s2Btn");
+
+    let socketStates = { s1: false, s2: false };
+
+    function showError(error) {
+      console.error(error);
+      status.textContent = "Error: " + error.message;
+    }
+
+    loginBtn.onclick = async () => {
+      loginBtn.disabled = true;
+      try {
+        await signInWithEmailAndPassword(
+          auth,
+          document.getElementById("email").value.trim(),
+          document.getElementById("password").value
+        );
+      } catch (error) {
+        showError(error);
+      } finally {
+        loginBtn.disabled = false;
+      }
+    };
+
+    onAuthStateChanged(auth, async user => {
+      login.hidden = !!user;
+      controls.hidden = !user;
+
+      if (!user) {
+        status.textContent = "Sign in to continue.";
+        return;
+      }
+
+      status.textContent = "Signed in. Loading socket states…";
+
+      try {
+        const snapshot = await get(ref(db, "commands"));
+        const data = snapshot.val() || {};
+
+        socketStates.s1 = data.s1 === true;
+        socketStates.s2 = data.s2 === true;
+
+        render();
+        status.textContent =
+          "Connected to Firebase. Device connectivity is not yet verified.";
+      } catch (error) {
+        showError(error);
+      }
+    });
+
+    function render() {
+      s1Btn.textContent = socketStates.s1 ? "Turn OFF" : "Turn ON";
+      s2Btn.textContent = socketStates.s2 ? "Turn OFF" : "Turn ON";
+      s1Btn.disabled = s2Btn.disabled = false;
+    }
+
+    async function toggleSocket(key, button) {
+      button.disabled = true;
+      try {
+        const nextState = !socketStates[key];
+
+        await set(ref(db, "commands/" + key), nextState);
+
+        socketStates[key] = nextState;
+        render();
+        status.textContent =
+          "Command saved. Waiting for device integration.";
+      } catch (error) {
+        showError(error);
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    s1Btn.onclick = () => toggleSocket("s1", s1Btn);
+    s2Btn.onclick = () => toggleSocket("s2", s2Btn);
+
+    document.getElementById("logoutBtn").onclick = async () => {
+      try {
+        await signOut(auth);
+      } catch (error) {
+        showError(error);
+      }
+    };
+  </script>
+</body>
+</html>
